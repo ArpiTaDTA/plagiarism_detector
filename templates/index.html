@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plagiarism Detector Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Academic Integrity Dashboard</p>
+                <h1>Broader plagiarism detection with passage-level evidence.</h1>
+                <p class="hero-text">
+                    Analyze essays, reports, and copied snippets against your large dataset corpus,
+                    then review suspicious passages, matched sources, and writing-health signals in one place.
+                </p>
+                <div class="hero-pills">
+                    <span>Corpus-backed similarity</span>
+                    <span>Paste or upload text files</span>
+                    <span>Readable risk summary</span>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="mini-stat">
+                    <span>Mode</span>
+                    <strong>Reviewer</strong>
+                </div>
+                <div class="mini-stat">
+                    <span>Input</span>
+                    <strong>Text / CSV / Markdown</strong>
+                </div>
+                <div class="mini-stat">
+                    <span>Output</span>
+                    <strong>Score + Source Clues</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="workspace">
+            <form id="analysis-form" class="editor-panel">
+                <label for="text-input" class="panel-title">Document Under Review</label>
+                <textarea id="text-input" name="text" placeholder="Paste student text, article content, report paragraphs, or assignment answers here..."></textarea>
+
+                <div class="toolbar">
+                    <label class="model-picker">
+                        <span>ML model</span>
+                        <select id="model-input" name="model">
+                            {% for model in model_choices %}
+                            <option value="{{ model.name }}" {% if model.name == default_model %}selected{% endif %}>
+                                {{ model.label }}{% if model.f1 %} · F1 {{ model.f1 }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="upload-chip">
+                        <input id="file-input" type="file" name="file" accept=".txt,.md,.csv">
+                        <span>Upload file</span>
+                    </label>
+                    <button type="button" class="ghost-button sample-button" data-sample="Technology is changing the modern classroom. Technology is changing the modern classroom by improving access to information, digital collaboration, and personalized learning opportunities for students.">
+                        Load sample
+                    </button>
+                    <button type="submit" class="primary-button">Analyze document</button>
+                </div>
+                <p id="file-name" class="file-name">No file selected</p>
+            </form>
+
+            <section id="results-panel" class="results-panel hidden">
+                <div class="summary-grid">
+                    <article class="metric-card highlight">
+                        <span>Plagiarism score</span>
+                        <strong id="score-value">0%</strong>
+                        <p id="risk-value">Low Risk</p>
+                    </article>
+                    <article class="metric-card">
+                        <span>Chosen model</span>
+                        <strong id="model-name">LR</strong>
+                        <p id="best-model">Best model: LR</p>
+                    </article>
+                    <article class="metric-card">
+                        <span>Words</span>
+                        <strong id="word-count">0</strong>
+                        <p>Document size</p>
+                    </article>
+                    <article class="metric-card">
+                        <span>Flagged passages</span>
+                        <strong id="flagged-count">0</strong>
+                        <p>Suspicious segments</p>
+                    </article>
+                </div>
+
+                <div class="insights-grid">
+                    <article class="insight-card">
+                        <h2>Suggestions</h2>
+                        <ul id="suggestions-list"></ul>
+                    </article>
+                    <article class="insight-card">
+                        <h2>Top Source Matches</h2>
+                        <div id="sources-list" class="stack"></div>
+                    </article>
+                </div>
+
+                <article class="insight-card full-width">
+                    <h2>Passage Review</h2>
+                    <div id="passages-list" class="stack"></div>
+                </article>
+            </section>
+
+            <section id="empty-state" class="empty-state">
+                <h2>Ready to inspect a document</h2>
+                <p>
+                    Paste text or upload a `.txt`, `.md`, or `.csv` file, then the app will estimate plagiarism risk,
+                    list the strongest source overlaps, and highlight where the text looks most suspicious.
+                </p>
+            </section>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
